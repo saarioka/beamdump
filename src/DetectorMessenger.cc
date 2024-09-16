@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2b/src/DetectorMessenger.cc
-/// \brief Implementation of the B2b::DetectorMessenger class
+/// \file B2/B2a/src/DetectorMessenger.cc
+/// \brief Implementation of the B2a::DetectorMessenger class
 
 #include "DetectorMessenger.hh"
 #include "DetectorConstruction.hh"
@@ -34,13 +34,13 @@
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
 
-namespace B2b
+namespace B2a
 {
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-DetectorMessenger::DetectorMessenger(DetectorConstruction* Det)
- : fDetectorConstruction(Det)
+DetectorMessenger::DetectorMessenger(DetectorConstruction* det)
+ : fDetectorConstruction(det)
 {
   fDirectory = new G4UIdirectory("/B2/");
   fDirectory->SetGuidance("UI commands specific to this example.");

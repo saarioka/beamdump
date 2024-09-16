@@ -24,11 +24,11 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2b/include/DetectorConstruction.hh
-/// \brief Definition of the B2b::DetectorConstruction class
+/// \file B2/B2a/include/DetectorConstruction.hh
+/// \brief Definition of the B2a::DetectorConstruction class
 
-#ifndef B2bDetectorConstruction_h
-#define B2bDetectorConstruction_h 1
+#ifndef B2aDetectorConstruction_h
+#define B2aDetectorConstruction_h 1
 
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
@@ -40,7 +40,7 @@ class G4Material;
 class G4UserLimits;
 class G4GlobalMagFieldMessenger;
 
-namespace B2b
+namespace B2a
 {
 
 class DetectorMessenger;
@@ -73,21 +73,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger;
                                          // magnetic field messenger
     // data members
-    G4LogicalVolume*  fLogicTarget = nullptr;
-    G4LogicalVolume*  fLogicFlange = nullptr;
-    G4LogicalVolume*  fLogicModerator = nullptr;
-    G4LogicalVolume*  fLogicPanel = nullptr;
-    G4LogicalVolume*  fLogicBerthold = nullptr;
-    G4LogicalVolume*  fLogicScorer1 = nullptr;
-    G4LogicalVolume*  fLogicScorer2 = nullptr;
-    G4LogicalVolume*  fLogicScorer3 = nullptr;
+    G4int fNbOfChambers = 0;
 
-    G4Material*       fTargetMaterial = nullptr;
-    G4Material*       fFlangeMaterial = nullptr;
-    G4Material*       fModeratorMaterial = nullptr;
-    G4Material*       fPanelMaterial = nullptr;
-    G4Material*       fBertholdMaterial = nullptr;
-    G4Material*       fWorldMaterial = nullptr;
+    G4LogicalVolume*  fLogicTarget = nullptr;  // pointer to the logical Target
+    G4LogicalVolume** fLogicChamber = nullptr; // pointer to the logical Chamber
+
+    G4Material*       fTargetMaterial = nullptr;  // pointer to the target  material
+    G4Material*       fChamberMaterial = nullptr; // pointer to the chamber material
 
     G4UserLimits* fStepLimit = nullptr; // pointer to user step limits
 

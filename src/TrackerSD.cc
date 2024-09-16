@@ -24,17 +24,15 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2b/src/TrackerSD.cc
+/// \file B2/B2a/src/TrackerSD.cc
 /// \brief Implementation of the B2::TrackerSD class
 
 #include "TrackerSD.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
-#include "G4VProcess.hh"
 #include "G4ThreeVector.hh"
 #include "G4SDManager.hh"
 #include "G4ios.hh"
-#include "G4SystemOfUnits.hh"
 
 namespace B2
 {
@@ -54,11 +52,13 @@ void TrackerSD::Initialize(G4HCofThisEvent* hce)
 {
   // Create hits collection
 
-  fHitsCollection = new TrackerHitsCollection(SensitiveDetectorName, collectionName[0]);
+  fHitsCollection
+    = new TrackerHitsCollection(SensitiveDetectorName, collectionName[0]);
 
   // Add this collection in hce
 
-  G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+  G4int hcID
+    = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
   hce->AddHitsCollection( hcID, fHitsCollection );
 }
 
@@ -67,29 +67,18 @@ void TrackerSD::Initialize(G4HCofThisEvent* hce)
 G4bool TrackerSD::ProcessHits(G4Step* aStep,
                                      G4TouchableHistory*)
 {
-  auto particleType = aStep->GetTrack()->GetParticleDefinition()->GetParticleName();
-  //G4cout << "Particle type: " << particleType << G4endl;
-  if (particleType != "neutron") return false;
-
-  G4String chamberName = aStep->GetPreStepPoint()->GetTouchable()->GetVolume()->GetName();
-  //G4cout << "Name: " << chamberName << G4endl;
-  if ((chamberName != "Moderator") && (chamberName != "Scorer1") && (chamberName != "BertholdGas")) return false;
-  //G4cout << "passed" << G4endl;
-
-  G4ThreeVector parentPos = aStep->GetPreStepPoint()->GetTouchableHandle()->GetTranslation();
-
+  // energy deposit
   G4double edep = aStep->GetTotalEnergyDeposit();
-  G4double e = aStep->GetPreStepPoint()->GetKineticEnergy();
-  //if (edep==0.) return false;
+
+  if (edep==0.) return false;
 
   auto newHit = new TrackerHit();
 
-  newHit->SetParticleName(particleType);
-  newHit->SetTrackID(aStep->GetTrack()->GetTrackID());
-  newHit->SetChamberNb(TrackerHit::NameToNb(chamberName));
+  newHit->SetTrackID  (aStep->GetTrack()->GetTrackID());
+  newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle()
+                                               ->GetCopyNumber());
   newHit->SetEdep(edep);
-  newHit->SetE(e);
-  newHit->SetPos(parentPos - aStep->GetPostStepPoint()->GetPosition());
+  newHit->SetPos (aStep->GetPostStepPoint()->GetPosition());
 
   fHitsCollection->insert( newHit );
 
@@ -102,20 +91,12 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep,
 
 void TrackerSD::EndOfEvent(G4HCofThisEvent*)
 {
-  G4int nofHits = fHitsCollection->entries();
-  if ( nofHits > 0 ) {
-    //G4cout << nofHits << " hits" << G4endl;
-  }
   if ( verboseLevel>1 ) {
+     std::size_t nofHits = fHitsCollection->entries();
      G4cout << G4endl
             << "-------->Hits Collection: in this event they are " << nofHits
             << " hits in the tracker chambers: " << G4endl;
-     for ( G4int i=0; i<nofHits; i++ ){
-       auto hit = (*fHitsCollection)[i];
-       if (hit->GetEdep() > 0.) {
-          hit->Print();
-       }
-     }
+     for ( std::size_t i=0; i<nofHits; i++ ) (*fHitsCollection)[i]->Print();
   }
 }
 

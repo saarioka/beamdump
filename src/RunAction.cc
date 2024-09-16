@@ -24,15 +24,13 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2b/src/RunAction.cc
+/// \file B2/B2a/src/RunAction.cc
 /// \brief Implementation of the B2::RunAction class
 
 #include "RunAction.hh"
 
 #include "G4Run.hh"
 #include "G4RunManager.hh"
-#include "G4AnalysisManager.hh"
-#include "G4SystemOfUnits.hh"
 
 namespace B2
 {
@@ -41,63 +39,22 @@ namespace B2
 
 RunAction::RunAction()
 {
-  G4RunManager::GetRunManager()->SetPrintProgress(1000000);
+  // set printing event number per each 100 events
+  G4RunManager::GetRunManager()->SetPrintProgress(1000);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void RunAction::BeginOfRunAction(const G4Run* run)
+void RunAction::BeginOfRunAction(const G4Run*)
 {
   //inform the runManager to save random number seed
   G4RunManager::GetRunManager()->SetRandomNumberStore(false);
-
-  auto analysisManager = G4AnalysisManager::Instance();
-
-  std::string runnumber = std::to_string( run->GetRunID() );
-
-  const char* runID = std::getenv("RUN_ID");
-  G4String identifier;
-  if (runID != NULL) {
-    identifier = runID;
-    identifier = "_" + identifier;
-  } else {
-    identifier = "";
-  }
-
-  G4String fileName = "Run" + runnumber + identifier + ".csv";
-
-  //analysisManager->SetNtupleMerging(false);
-  analysisManager->OpenFile(fileName);
-
-  // Hists
-  analysisManager->CreateH1("E", "Incoming energy (keV)", 200, 0, 10000);
-  analysisManager->CreateH1("Edep", "Deposited energy (keV)", 200, 0, 10000);
-  analysisManager->CreateH1("X", "X-coordinate (cm)", 100, -3, 3);
-  analysisManager->CreateH1("Y", "Y-coordinate (cm)", 100, -3, 3);
-  analysisManager->CreateH1("Z", "Z-coordinate (cm)", 100, -3, 3);
-  analysisManager->CreateH1("EMod", "Energy of neutrons entering moderator(kev)", 200, 0, 10000);
-  analysisManager->CreateH1("ES1", "Energy of neutrons entering scorer1 (kev)", 200, 0, 10000);
-
-  // Ntuples
-  analysisManager->CreateNtuple("Ntuple", "Ntuple");
-  analysisManager->CreateNtupleDColumn("E");
-  analysisManager->CreateNtupleDColumn("Edep");
-  analysisManager->CreateNtupleDColumn("X");
-  analysisManager->CreateNtupleDColumn("Y");
-  analysisManager->CreateNtupleDColumn("Z");
-  analysisManager->CreateNtupleIColumn("Evt");
-  analysisManager->CreateNtupleIColumn("Detector");
-  analysisManager->FinishNtuple();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void RunAction::EndOfRunAction(const G4Run* ){
-  auto analysisManager = G4AnalysisManager::Instance();
-
-  analysisManager->Write();
-  analysisManager->CloseFile();
-}
+void RunAction::EndOfRunAction(const G4Run* )
+{}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

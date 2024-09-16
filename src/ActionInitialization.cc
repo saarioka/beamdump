@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2b/src/ActionInitialization.cc
+/// \file B2/B2a/src/ActionInitialization.cc
 /// \brief Implementation of the B2::ActionInitialization class
 
 #include "ActionInitialization.hh"

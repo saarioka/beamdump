@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2b/src/PrimaryGeneratorAction.cc
+/// \file B2/B2a/src/PrimaryGeneratorAction.cc
 /// \brief Implementation of the B2::PrimaryGeneratorAction class
 
 #include "PrimaryGeneratorAction.hh"
@@ -38,7 +38,6 @@
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
-#include "G4PhysicalConstants.hh"
 
 namespace B2
 {
@@ -52,12 +51,12 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 
   // default particle kinematic
 
-  G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle("proton");
+  G4ParticleDefinition* particleDefinition
+    = G4ParticleTable::GetParticleTable()->FindParticle("e-");
 
   fParticleGun->SetParticleDefinition(particleDefinition);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-  fParticleGun->SetParticlePosition(G4ThreeVector(0.,0.,-1*cm));
-  fParticleGun->SetParticleEnergy(10.0*MeV);
+  fParticleGun->SetParticleEnergy(3.0*GeV);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -88,17 +87,12 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4cerr << "The gun will be place in the center." << G4endl;
   }
 
-  // Note that this particular case of starting a primary particle on the world boundary
-  // requires shooting in a direction towards inside the world.
-  //fParticleGun->SetParticlePosition(G4ThreeVector(0., 0., -worldZHalfLength));
+  // Gaussian x- and y-positions
+  G4double sigma = 1*cm;
+  G4double x = G4RandGauss::shoot(0, sigma);
+  G4double y = G4RandGauss::shoot(0, sigma);
 
-  // sample random x and y so they are within a circle of 2 cm diameter
-  G4double r = G4UniformRand()*19*mm;
-  G4double angle = G4UniformRand()*2*pi;
-  G4double x = r*cos(angle);
-  G4double y = r*sin(angle);
-  
-  fParticleGun->SetParticlePosition(G4ThreeVector(x, y, -1*cm));
+  fParticleGun->SetParticlePosition(G4ThreeVector(x, y, -worldZHalfLength + 1*cm));
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }

@@ -1,8 +1,8 @@
 #----------------------------------------------------------------------------
 # Setup the project
 #
-cmake_minimum_required(VERSION 3.16...3.21)
-project(B2b)
+cmake_minimum_required(VERSION 3.16...3.27)
+project(B2a)
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default
@@ -33,23 +33,25 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
-add_executable(exampleB2b exampleB2b.cc ${sources} ${headers})
-target_link_libraries(exampleB2b ${Geant4_LIBRARIES})
+add_executable(exampleB2a exampleB2a.cc ${sources} ${headers})
+target_link_libraries(exampleB2a ${Geant4_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
-# build B2b. This is so that we can run the executable directly because it
+# build B2a. This is so that we can run the executable directly because it
 # relies on these scripts being in the current working directory.
 #
-set(EXAMPLEB2B_SCRIPTS
+set(EXAMPLEB2A_SCRIPTS
+  exampleB2a.out
+  exampleB2.in
   gui.mac
+  run1.mac
+  run2.mac
   init_vis.mac
-  run.mac
   vis.mac
-  run.sh
   )
 
-foreach(_script ${EXAMPLEB2B_SCRIPTS})
+foreach(_script ${EXAMPLEB2A_SCRIPTS})
   configure_file(
     ${PROJECT_SOURCE_DIR}/${_script}
     ${PROJECT_BINARY_DIR}/${_script}
@@ -60,4 +62,4 @@ endforeach()
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS exampleB2b DESTINATION bin)
+install(TARGETS exampleB2a DESTINATION bin)

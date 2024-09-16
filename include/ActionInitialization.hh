@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2b/include/ActionInitialization.hh
+/// \file B2/B2a/include/ActionInitialization.hh
 /// \brief Definition of the B2::ActionInitialization class
 
 #ifndef B2ActionInitialization_h

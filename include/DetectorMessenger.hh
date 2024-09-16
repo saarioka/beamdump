@@ -24,11 +24,11 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2b/include/DetectorMessenger.hh
-/// \brief Definition of the B2b::DetectorMessenger class
+/// \file B2/B2a/include/DetectorMessenger.hh
+/// \brief Definition of the B2a::DetectorMessenger class
 
-#ifndef B2bDetectorMessenger_h
-#define B2bDetectorMessenger_h 1
+#ifndef B2aDetectorMessenger_h
+#define B2aDetectorMessenger_h 1
 
 #include "globals.hh"
 #include "G4UImessenger.hh"
@@ -37,12 +37,12 @@ class G4UIdirectory;
 class G4UIcmdWithAString;
 class G4UIcmdWithADoubleAndUnit;
 
-namespace B2b
+namespace B2a
 {
 
 class DetectorConstruction;
 
-/// Messenger class that defines commands for B2b::DetectorConstruction.
+/// Messenger class that defines commands for DetectorConstruction.
 ///
 /// It implements commands:
 /// - /B2/det/setTargetMaterial name

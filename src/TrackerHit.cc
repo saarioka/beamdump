@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2b/src/TrackerHit.cc
+/// \file B2/B2a/src/TrackerHit.cc
 /// \brief Implementation of the B2::TrackerHit class
 
 #include "TrackerHit.hh"
@@ -58,8 +58,7 @@ void TrackerHit::Draw()
     G4Circle circle(fPos);
     circle.SetScreenSize(4.);
     circle.SetFillStyle(G4Circle::filled);
-    G4Colour colour(1.,0.,0.);
-    G4VisAttributes attribs(colour);
+    G4VisAttributes attribs(G4Colour::Red());
     circle.SetVisAttributes(attribs);
     pVVisManager->Draw(circle);
   }
@@ -70,13 +69,11 @@ void TrackerHit::Draw()
 void TrackerHit::Print()
 {
   G4cout
-     << "  trackID: " << fTrackID
-     << " chamberNb: " << fChamberNb
-     << " chamberName: " << fChamberNbToName.at(fChamberNb)
-     << " particleName: " << fParticleName
-     << " Edep: " << std::setw(7) << G4BestUnit(fEdep,"Energy")
-     << " E: " << std::setw(7) << G4BestUnit(fE,"Energy")
-     << " Position: " << std::setw(7) << G4BestUnit( fPos,"Length")
+     << "  trackID: " << fTrackID << " chamberNb: " << fChamberNb
+     << "Edep: "
+     << std::setw(7) << G4BestUnit(fEdep,"Energy")
+     << " Position: "
+     << std::setw(7) << G4BestUnit( fPos,"Length")
      << G4endl;
 }
 

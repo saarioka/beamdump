@@ -24,19 +24,17 @@
 // ********************************************************************
 //
 //
-/// \file exampleB2b.cc
-/// \brief Main program of the B2b example
+/// \file exampleB2a.cc
+/// \brief Main program of the B2a example
 
 #include "DetectorConstruction.hh"
 #include "ActionInitialization.hh"
-#include "G4ScoringManager.hh"
 
 #include "G4RunManagerFactory.hh"
 #include "G4SteppingVerbose.hh"
 #include "G4UImanager.hh"
 #include "FTFP_BERT.hh"
 #include "G4StepLimiterPhysics.hh"
-#include "G4GenericBiasingPhysics.hh"
 
 #include "Randomize.hh"
 
@@ -61,35 +59,36 @@ int main(int argc,char** argv)
 
   // Construct the default run manager
   //
-  auto* runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
-  G4ScoringManager* scoringManager = G4ScoringManager::GetScoringManager();
+  auto runManager =
+    G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
   // Set mandatory initialization classes
   //
-  runManager->SetUserInitialization(new B2b::DetectorConstruction());
+  runManager->SetUserInitialization(new B2a::DetectorConstruction());
 
-  G4VModularPhysicsList* physicsList = new FTFP_BERT;
+  auto physicsList = new FTFP_BERT;
   physicsList->RegisterPhysics(new G4StepLimiterPhysics());
-
   runManager->SetUserInitialization(physicsList);
 
   // Set user action classes
   runManager->SetUserInitialization(new B2::ActionInitialization());
 
-  // Initialize visualization
-  //
-  G4VisManager* visManager = new G4VisExecutive;
-  // G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.
-  // G4VisManager* visManager = new G4VisExecutive("Quiet");
+  // Initialize visualization with the default graphics system
+  auto visManager = new G4VisExecutive(argc, argv);
+  // Constructors can also take optional arguments:
+  // - a graphics system of choice, eg. "OGL"
+  // - and a verbosity argument - see /vis/verbose guidance.
+  // auto visManager = new G4VisExecutive(argc, argv, "OGL", "Quiet");
+  // auto visManager = new G4VisExecutive("Quiet");
   visManager->Initialize();
 
   // Get the pointer to the User Interface manager
-  G4UImanager* UImanager = G4UImanager::GetUIpointer();
+  auto UImanager = G4UImanager::GetUIpointer();
 
   // Process macro or start UI session
   //
   if ( ! ui ) {
-    // barch mode
+    // batch mode
     G4String command = "/control/execute ";
     G4String fileName = argv[1];
     UImanager->ApplyCommand(command+fileName);
@@ -108,7 +107,7 @@ int main(int argc,char** argv)
   // Free the store: user actions, physics_list and detector_description are
   // owned and deleted by the run manager, so they should not be deleted
   // in the main() program !
-
+  //
   delete visManager;
   delete runManager;
 }

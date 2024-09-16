@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2b/include/EventAction.hh
+/// \file B2/B2a/include/EventAction.hh
 /// \brief Definition of the B2::EventAction class
 
 #ifndef B2EventAction_h
@@ -47,8 +47,6 @@ class EventAction : public G4UserEventAction
 
     void  BeginOfEventAction(const G4Event* ) override;
     void    EndOfEventAction(const G4Event* ) override;
-  
-  private:
 };
 
 }

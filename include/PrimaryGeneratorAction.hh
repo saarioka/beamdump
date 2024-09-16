@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2b/include/PrimaryGeneratorAction.hh
+/// \file B2/B2a/include/PrimaryGeneratorAction.hh
 /// \brief Definition of the B2::PrimaryGeneratorAction class
 
 #ifndef B2PrimaryGeneratorAction_h
@@ -55,9 +55,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void GeneratePrimaries(G4Event* ) override;
 
     G4ParticleGun* GetParticleGun() {return fParticleGun;}
-
-    // Set methods
-    void SetRandomFlag(G4bool );
 
   private:
     G4ParticleGun* fParticleGun = nullptr; // G4 particle gun
