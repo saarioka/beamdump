@@ -1,0 +1,1 @@
+export G4LEDATA=/home/ssaariok/Documents/geant4-v11.2.2-install/share/Geant4/data/G4EMLOW8.5

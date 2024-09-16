@@ -35,9 +35,6 @@
 #include "G4SteppingVerbose.hh"
 #include "G4UImanager.hh"
 #include "FTFP_BERT.hh"
-#include "QGSP_BIC_HP.hh"
-#include "QGSP_BIC_AllHP.hh"
-#include "G4ParticleHPManager.hh"
 #include "G4StepLimiterPhysics.hh"
 #include "G4GenericBiasingPhysics.hh"
 
@@ -71,16 +68,10 @@ int main(int argc,char** argv)
   //
   runManager->SetUserInitialization(new B2b::DetectorConstruction());
 
-  //G4VModularPhysicsList* physicsList = new QGSP_BIC_HP;
-  G4VModularPhysicsList* physicsList = new QGSP_BIC_AllHP;
+  G4VModularPhysicsList* physicsList = new FTFP_BERT;
   physicsList->RegisterPhysics(new G4StepLimiterPhysics());
 
   runManager->SetUserInitialization(physicsList);
-
-  G4ParticleHPManager::GetInstance()->SetSkipMissingIsotopes(true);
-  G4ParticleHPManager::GetInstance()->SetDoNotAdjustFinalState(true);
-  //G4ParticleHPManager::GetInstance()->SetProduceFissionFragments(true);
-  //G4ParticleHPManager::GetInstance()->SetUseOnlyPhotoEvaporation(true);
 
   // Set user action classes
   runManager->SetUserInitialization(new B2::ActionInitialization());
