@@ -20,25 +20,19 @@ def read_histo(file_name):
             if not line.startswith('#'):
                 break
             l += 1
+
     df = pd.read_csv(file_name, skiprows=l)
 
     info = {
-        'Bins:': bins,
-        'Lower lim:': lower,
-        'Upper lim:': upper,
-        'Underflow:': df['entries'].iloc[0],
-        'Overflow:': df['entries'].iloc[-1],
-        'Total entries:': df['entries'].sum()
+        'Bins': int(bins),
+        'Lower_lim': float(lower),
+        'Upper_lim': float(upper),
+        'Underflow': df['entries'].iloc[0],
+        'Overflow': df['entries'].iloc[-1],
+        'Total_entries': df['entries'].sum()
     }
-    info_str = '\n'.join([f'{k} {v}' for k, v in info.items()])
 
-    x = np.linspace(float(lower), float(upper), int(bins))
-
-    plt.figure(figsize=(10, 6))
-    plt.title(title)
-    plt.step(x, df['entries'][1:-1], label='Entries per bin')
-    plt.legend(title=info_str)
-    plt.savefig(file_name.replace('.csv', '.pdf'))
+    return df, info, title
 
 
 def read_ntuples(file_names):
@@ -65,13 +59,35 @@ def read_ntuples(file_names):
     return pd.concat(dfs)
 
 def main():
-    #read_histo('Run0_h1_E.csv')
-    #read_histo('Run0_h1_Edep.csv')
-    #read_histo('Run0_h1_X.csv')
-    #read_histo('Run0_h1_Y.csv')
-    #read_histo('Run0_h1_Z.csv')
+    histos = glob.glob('Run0_h1_E*.csv')
+    plt.figure(figsize=(10, 6))
+    for i,h in enumerate(histos):
+        df, info, title = read_histo(h)
+        info_str = '\n'.join([f'{k} {v}' for k, v in info.items()])
 
-    #read_ntuples(glob.glob('Run0_nt_Ntuple_t*.csv'))
+        x = np.linspace(info['Lower_lim'], info['Upper_lim'], info['Bins'])
+
+        #plt.title(title)
+        #plt.step(x, df['entries'][1:-1], label='Entries per bin')
+        #plt.savefig(h.replace('.csv', '.pdf'))
+        #plt.close()
+
+        label = None
+        if i == 0:
+            label = 'Largest angle'
+        elif i == len(histos)-1:
+            label = 'Smallest angle'
+
+        plt.step(x, df['entries'][1:-1], label=label, color=[0.9*i/len(histos)]*3)
+    
+    plt.legend()
+    plt.ylabel('Entries')
+    plt.xlabel('Energy [keV]')
+    plt.title('Energy of incoming gammas')
+    plt.tight_layout()
+    plt.savefig('E.pdf', bbox_inches='tight')
+
+    read_ntuples(glob.glob('Run0_nt_Ntuple_t*.csv'))
 
 if __name__ == '__main__':
     main()
