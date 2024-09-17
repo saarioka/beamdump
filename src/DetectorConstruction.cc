@@ -66,7 +66,7 @@ DetectorConstruction::DetectorConstruction()
 {
   fMessenger = new DetectorMessenger(this);
 
-  fNbOfChambers = 50;
+  fNbOfChambers = 30;
   fLogicChamber = new G4LogicalVolume*[fNbOfChambers];
 }
 
@@ -102,10 +102,11 @@ void DetectorConstruction::DefineMaterials()
   nistManager->FindOrBuildMaterial("G4_Galactic");
 
   // Lead defined using NIST Manager
-  fTargetMaterial  = nistManager->FindOrBuildMaterial("G4_Pb");
+  fTargetMaterial  = nistManager->FindOrBuildMaterial("G4_W");
+  fTargetMaterial2  = nistManager->FindOrBuildMaterial("G4_W");
 
   // Xenon gas defined using NIST Manager
-  fChamberMaterial = nistManager->FindOrBuildMaterial("G4_Xe");
+  fChamberMaterial = nistManager->FindOrBuildMaterial("G4_Galactic");
 
   // Print materials
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
@@ -122,15 +123,16 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   G4double chamberSpacing = 80*cm; // from chamber center to center!
 
   G4double chamberWidth = 5.0*cm; // width of the chambers
-  G4double targetLength = 5.0*cm; // full length of Target
+  G4double targetLength = 1.0*mm; // full length of Target
+  G4double targetLength2 = 5*cm; // full length of Target
 
   G4double trackerLength = (fNbOfChambers+1)*chamberSpacing;
 
   G4double worldLength = 1.2 * (2*targetLength + trackerLength);
 
-  G4double targetRadius  = 0.5*targetLength;   // Radius of Target
+  G4double targetRadius  = 30*mm;   // Radius of Target
   targetLength = 0.5*targetLength;             // Half length of the Target
-  G4double trackerSize   = 0.5*trackerLength;  // Half length of the Tracker
+  G4double trackerSize  = 60*cm;  // Half length of the Tracker
 
   // Definitions of Solids, Logical Volumes, Physical Volumes
 
@@ -174,14 +176,33 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     0,                        // copy number
     fCheckOverlaps);          // checking overlaps
 
-  G4cout << "Target is " << 2*targetLength/cm << " cm of "
-         << fTargetMaterial->GetName() << G4endl;
+  G4cout << "Target is " << 2*targetLength/cm << " cm of " << fTargetMaterial->GetName() << G4endl;
+
+  G4ThreeVector positionTarget2 = G4ThreeVector(0, 0, 550*mm + targetLength2);
+
+  G4RotationMatrix* targetRotation2 = new G4RotationMatrix();
+  targetRotation2->rotateY(-5*deg);
+  auto targetS2 = new G4Tubs("target", 0., targetRadius, targetLength2, 0. * deg, 360. * deg);
+  fLogicTarget2 = new G4LogicalVolume(targetS2, fTargetMaterial2, "Target", nullptr, nullptr, nullptr);
+
+
+  new G4PVPlacement(targetRotation2,
+    positionTarget2,           // at (x,y,z)
+    fLogicTarget2,             // its logical volume
+    "Target",                 // its name
+    worldLV,                  // its mother volume
+    false,                    // no boolean operations
+    0,                        // copy number
+    fCheckOverlaps);          // checking overlaps
+
+  G4cout << "Target is " << 2*targetLength/cm << " cm of " << fTargetMaterial->GetName() << G4endl;
 
   // Tracker
 
-  G4ThreeVector positionTracker = G4ThreeVector(0,0,0);
+  G4ThreeVector positionTracker = G4ThreeVector(-trackerSize - 5 * cm, 0, 550*mm);
 
-  auto trackerS = new G4Tubs("tracker", 0, trackerSize, trackerSize, 0. * deg, 360. * deg);
+  //auto trackerS = new G4Tubs("tracker", 0, trackerSize, trackerSize, 0. * deg, 360. * deg);
+  auto trackerS = new G4Box("tracker", trackerSize, trackerSize, trackerSize);
   auto trackerLV = new G4LogicalVolume(trackerS, air, "Tracker", nullptr, nullptr, nullptr);
   new G4PVPlacement(nullptr,  // no rotation
     positionTracker,          // at (x,y,z)
@@ -203,33 +224,9 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
   // Tracker segments
 
-  G4cout << "There are " << fNbOfChambers << " chambers in the tracker region. "
-         << G4endl
-         << "The chambers are " << chamberWidth/cm << " cm of "
-         << fChamberMaterial->GetName() << G4endl
-         << "The distance between chamber is " << chamberSpacing/cm << " cm"
-         << G4endl;
-
-  G4double firstPosition = -trackerSize + chamberSpacing;
-  G4double firstLength   = trackerLength/10;
-  G4double lastLength    = trackerLength;
-
   G4double halfWidth = 0.5*chamberWidth;
-  G4double rmaxFirst = 0.5 * firstLength;
 
-  G4double rmaxIncr = 0.0;
-  if( fNbOfChambers > 0 ){
-    rmaxIncr =  0.5 * (lastLength-firstLength)/(fNbOfChambers-1);
-    if (chamberSpacing  < chamberWidth) {
-       G4Exception("DetectorConstruction::DefineVolumes()",
-                   "InvalidSetup", FatalException,
-                   "Width>Spacing");
-    }
-  }
-
-
-  G4double R = 100 * cm;
-  G4double z = 550 * mm;
+  G4double R = trackerSize - 1*cm;  // because of angle
 
   for (G4int copyNo=0; copyNo<fNbOfChambers; copyNo++) {
 
@@ -240,9 +237,9 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
       fLogicChamber[copyNo]->SetVisAttributes(chamberVisAtt);
 
-      G4double chamberX = R * std::cos(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI) - 20 * cm;
+      G4double chamberX = R * std::cos(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI) + R - halfWidth;
       G4double chamberY = 0;
-      G4double chamberZ = R * std::sin(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI) - R;
+      G4double chamberZ = R * std::sin(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI);
 
       // rotate towards the center of the arc
       G4RotationMatrix* rotation = new G4RotationMatrix();
@@ -258,24 +255,9 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         fCheckOverlaps);                 // checking overlaps
   }
 
-  // Example of User Limits
-  //
-  // Below is an example of how to set tracking constraints in a given
-  // logical volume
-  //
-  // Sets a max step length in the tracker region, with G4StepLimiter
-
   G4double maxStep = 0.5*chamberWidth;
   fStepLimit = new G4UserLimits(maxStep);
   trackerLV->SetUserLimits(fStepLimit);
-
-  /// Set additional contraints on the track, with G4UserSpecialCuts
-  ///
-  /// G4double maxLength = 2*trackerLength, maxTime = 0.1*ns, minEkin = 10*MeV;
-  /// trackerLV->SetUserLimits(new G4UserLimits(maxStep,
-  ///                                           maxLength,
-  ///                                           maxTime,
-  ///                                           minEkin));
 
   // Always return the physical world
 

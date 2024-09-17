@@ -76,9 +76,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4int fNbOfChambers = 0;
 
     G4LogicalVolume*  fLogicTarget = nullptr;  // pointer to the logical Target
+    G4LogicalVolume*  fLogicTarget2 = nullptr;  // pointer to the logical Target
     G4LogicalVolume** fLogicChamber = nullptr; // pointer to the logical Chamber
 
     G4Material*       fTargetMaterial = nullptr;  // pointer to the target  material
+    G4Material*       fTargetMaterial2 = nullptr;  // pointer to the target  material
     G4Material*       fChamberMaterial = nullptr; // pointer to the chamber material
 
     G4UserLimits* fStepLimit = nullptr; // pointer to user step limits

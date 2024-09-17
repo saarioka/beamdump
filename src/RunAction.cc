@@ -31,6 +31,8 @@
 
 #include "G4Run.hh"
 #include "G4RunManager.hh"
+#include "G4AnalysisManager.hh"
+#include "G4SystemOfUnits.hh"
 
 namespace B2
 {
@@ -45,16 +47,38 @@ RunAction::RunAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void RunAction::BeginOfRunAction(const G4Run*)
+void RunAction::BeginOfRunAction(const G4Run* run)
 {
   //inform the runManager to save random number seed
-  G4RunManager::GetRunManager()->SetRandomNumberStore(false);
+  //G4RunManager::GetRunManager()->SetRandomNumberStore(false);
+
+  auto analysisManager = G4AnalysisManager::Instance(); //get the manager
+  std::string runnumber = std::to_string( run->GetRunID() );
+  G4String fileName = "Run" + runnumber + ".csv";
+
+  analysisManager->OpenFile(fileName);
+
+  for (int i = 0; i < 30; i++)
+  {
+    analysisManager->CreateH1("E"+std::to_string(i), "Energy deposited in detector " + std::to_string(i), 100, 0, 4700);
+  }
+
+  analysisManager->CreateNtuple("Ntuple", "Ntuple");
+  analysisManager->CreateNtupleDColumn("Energy");
+  analysisManager->CreateNtupleIColumn("Detector");
+  analysisManager->CreateNtupleIColumn("Evt");
+  analysisManager->FinishNtuple();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void RunAction::EndOfRunAction(const G4Run* )
-{}
+{
+  auto analysisManager = G4AnalysisManager::Instance();
+
+  analysisManager->Write();
+  analysisManager->CloseFile();
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

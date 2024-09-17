@@ -70,17 +70,30 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep,
   // energy deposit
   G4double edep = aStep->GetTotalEnergyDeposit();
 
-  if (edep==0.) return false;
+  //get energy of particle
+  G4double e = aStep->GetPreStepPoint()->GetKineticEnergy();
+
+  //if (edep==0.) return false;
+  
+  G4Track *track = aStep->GetTrack();
+
+  auto particleName = track->GetDefinition()->GetParticleName();
+  if (particleName != "gamma"){
+    track->SetTrackStatus(fStopAndKill);
+    return false;
+  }
 
   auto newHit = new TrackerHit();
 
   newHit->SetTrackID  (aStep->GetTrack()->GetTrackID());
-  newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle()
-                                               ->GetCopyNumber());
+  newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber());
   newHit->SetEdep(edep);
+  newHit->SetE(e);
   newHit->SetPos (aStep->GetPostStepPoint()->GetPosition());
 
   fHitsCollection->insert( newHit );
+
+  track->SetTrackStatus(fStopAndKill);
 
   //newHit->Print();
 
