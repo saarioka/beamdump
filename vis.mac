@@ -65,9 +65,9 @@
 # For file-based drivers, use this to create an empty detector view:
 #/vis/viewer/flush
 
-#/vis/geometry/set/visibility World 0 false
-#/vis/geometry/set/visibility Tracker 0 false
+/vis/geometry/set/visibility World 0 false
+/vis/geometry/set/visibility Tracker 0 false
 
-#/vis/viewer/set/background 0.8 0.7 0.6
-#/vis/viewer/set/style s
-#/vis/viewer/set/hiddenEdge 1
+/vis/viewer/set/background 0.8 0.7 0.6
+/vis/viewer/set/style s
+/vis/viewer/set/hiddenEdge 1

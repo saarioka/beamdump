@@ -56,7 +56,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 
   fParticleGun->SetParticleDefinition(particleDefinition);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-  fParticleGun->SetParticleEnergy(3.0*GeV);
+  fParticleGun->SetParticleEnergy(4.7*MeV);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -87,10 +87,15 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4cerr << "The gun will be place in the center." << G4endl;
   }
 
+  G4double sigma = 200 * um;
+
   // Gaussian x- and y-positions
-  G4double sigma = 1*cm;
-  G4double x = G4RandGauss::shoot(0, sigma);
-  G4double y = G4RandGauss::shoot(0, sigma);
+  //G4double x = G4RandGauss::shoot(0, sigma);
+  //G4double y = G4RandGauss::shoot(0, sigma);
+
+  // random x- and y-positions
+  G4double x = G4UniformRand() * 2 * sigma - sigma;
+  G4double y = G4UniformRand() * 2 * sigma - sigma;
 
   fParticleGun->SetParticlePosition(G4ThreeVector(x, y, -worldZHalfLength + 1*cm));
 

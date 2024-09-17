@@ -66,7 +66,7 @@ DetectorConstruction::DetectorConstruction()
 {
   fMessenger = new DetectorMessenger(this);
 
-  fNbOfChambers = 5;
+  fNbOfChambers = 50;
   fLogicChamber = new G4LogicalVolume*[fNbOfChambers];
 }
 
@@ -99,7 +99,7 @@ void DetectorConstruction::DefineMaterials()
   G4NistManager* nistManager = G4NistManager::Instance();
 
   // Air defined using NIST Manager
-  nistManager->FindOrBuildMaterial("G4_AIR");
+  nistManager->FindOrBuildMaterial("G4_Galactic");
 
   // Lead defined using NIST Manager
   fTargetMaterial  = nistManager->FindOrBuildMaterial("G4_Pb");
@@ -115,14 +115,14 @@ void DetectorConstruction::DefineMaterials()
 
 G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 {
-  G4Material* air  = G4Material::GetMaterial("G4_AIR");
+  G4Material* air  = G4Material::GetMaterial("G4_Galactic");
 
   // Sizes of the principal geometrical components (solids)
 
   G4double chamberSpacing = 80*cm; // from chamber center to center!
 
-  G4double chamberWidth = 20.0*cm; // width of the chambers
-  G4double targetLength =  5.0*cm; // full length of Target
+  G4double chamberWidth = 5.0*cm; // width of the chambers
+  G4double targetLength = 5.0*cm; // full length of Target
 
   G4double trackerLength = (fNbOfChambers+1)*chamberSpacing;
 
@@ -161,7 +161,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
   // Target
 
-  G4ThreeVector positionTarget = G4ThreeVector(0,0,-(targetLength+trackerSize));
+  G4ThreeVector positionTarget = G4ThreeVector(0,0,0);
 
   auto targetS = new G4Tubs("target", 0., targetRadius, targetLength, 0. * deg, 360. * deg);
   fLogicTarget = new G4LogicalVolume(targetS, fTargetMaterial, "Target", nullptr, nullptr, nullptr);
@@ -227,20 +227,29 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     }
   }
 
+
+  G4double R = 100 * cm;
+  G4double z = 550 * mm;
+
   for (G4int copyNo=0; copyNo<fNbOfChambers; copyNo++) {
 
-      G4double Zposition = firstPosition + copyNo * chamberSpacing;
-      G4double rmax =  rmaxFirst + copyNo * rmaxIncr;
+      G4double chamberThickness = 0.1*cm;
+      auto chamberS = new G4Box("Chamber_solid", halfWidth, halfWidth, chamberThickness);
 
-      auto chamberS = new G4Tubs("Chamber_solid", 0, rmax, halfWidth, 0. * deg, 360. * deg);
-
-      fLogicChamber[copyNo] =
-        new G4LogicalVolume(chamberS, fChamberMaterial, "Chamber_LV", nullptr, nullptr, nullptr);
+      fLogicChamber[copyNo] = new G4LogicalVolume(chamberS, fChamberMaterial, "Chamber_LV", nullptr, nullptr, nullptr);
 
       fLogicChamber[copyNo]->SetVisAttributes(chamberVisAtt);
 
-      new G4PVPlacement(nullptr,         // no rotation
-        G4ThreeVector(0, 0, Zposition),  // at (x,y,z)
+      G4double chamberX = R * std::cos(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI) - 20 * cm;
+      G4double chamberY = 0;
+      G4double chamberZ = R * std::sin(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI) - R;
+
+      // rotate towards the center of the arc
+      G4RotationMatrix* rotation = new G4RotationMatrix();
+      rotation->rotateY( (double)copyNo / (double)fNbOfChambers * M_PI);
+
+      new G4PVPlacement(rotation,
+        G4ThreeVector(chamberX, chamberY, chamberZ),  // at (x,y,z)
         fLogicChamber[copyNo],           // its logical volume
         "Chamber_PV",                    // its name
         trackerLV,                       // its mother  volume
