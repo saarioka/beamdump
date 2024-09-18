@@ -277,13 +277,13 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   fLogicTarget2->SetRegion(targetRegion2);
   targetRegion2->AddRootLogicalVolume(fLogicTarget2);
 
-  //cuts->SetProductionCut(0.01 * mm, "gamma");
-  //cuts->SetProductionCut(0.01 * mm, "e-");
-  //cuts->SetProductionCut(0.01 * mm, "e+");
-  //cuts->SetProductionCut(0.05 * mm);
-
   G4ProductionCuts* targetCuts = new G4ProductionCuts();
-  targetCuts->SetProductionCut(5 * um);
+
+  targetCuts->SetProductionCut(5*um);
+  targetCuts->SetProductionCut(0.5*um, "e-");
+  targetCuts->SetProductionCut(0.5*um, "e+");
+
+  //targetCuts->SetProductionCut(5 * um);
   targetRegion->SetProductionCuts(targetCuts);
   targetRegion2->SetProductionCuts(targetCuts);
 

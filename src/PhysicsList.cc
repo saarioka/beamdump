@@ -5,6 +5,7 @@
 
 #include "G4DecayPhysics.hh"
 #include "G4EmStandardPhysics_option4.hh"
+#include "G4EmLivermorePhysics.hh"
 #include "G4ParticleWithCuts.hh"
 #include "G4RadioactiveDecayPhysics.hh"
 #include "G4StepLimiterPhysics.hh"
@@ -22,7 +23,8 @@ PhysicsList::PhysicsList() : G4VUserPhysicsList() {
     RegisterPhysics(new G4DecayPhysics());
 
     // EM physics
-    RegisterPhysics(new G4EmStandardPhysics_option4());
+    //RegisterPhysics(new G4EmStandardPhysics_option4());
+    RegisterPhysics(new G4EmLivermorePhysics());
 
     // Add step Max
     //AddStepMax();
@@ -38,9 +40,7 @@ void PhysicsList::SetCuts() {
     SetCutValue(fGammaCut, "gamma");
     SetCutValue(fElectronCut, "e-");
 
-    if (PhysicsList::GetVerboseLevel() > 0) {
-        DumpCutValuesTable();
-    }
+    DumpCutValuesTable();
 }
 
 void PhysicsList::AddStepMax() {

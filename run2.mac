@@ -4,7 +4,14 @@
 # % exampleB2[a,b] run2.mac
 #
 
+/cuts/setLowEdge 100 eV
+
 /run/numberOfThreads 22
 /run/initialize
+
+/process/em/lowestElectronEnergy 10 eV
+/process/em/deexcitation Target2 true true true
+/process/eLoss/StepFunction 0.1 0.001 mm
+
 /run/printProgress 1000000
-/run/beamOn        100000000
+/run/beamOn        1000000

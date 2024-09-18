@@ -59,8 +59,10 @@ def read_ntuples(file_names):
     return pd.concat(dfs)
 
 def main():
+    good_detectors = list(range(10, 26))
+
     histos = []
-    for i in range(10, 26):
+    for i in good_detectors:
         histos.append(f'Run0_h1_E{i}.csv')
 
     plt.figure(figsize=(10, 6))
@@ -96,7 +98,31 @@ def main():
     plt.tight_layout()
     plt.savefig('E.pdf', bbox_inches='tight')
 
-    #read_ntuples(glob.glob('Run0_nt_Ntuple_t*.csv'))
+    df = read_ntuples(glob.glob('Run0_nt_Ntuple_t*.csv'))
+
+    plt.figure(figsize=(12, 6))
+    for i,ind in enumerate(good_detectors):
+        det = df[df['Detector'] == ind]
+
+        label = None
+        if i == 0:
+            label = 'Largest angle'
+        elif i == len(good_detectors)-1:
+            label = 'Smallest angle'
+        
+        color = [0.9*i/len(good_detectors)]*3 if ind != 18 else 'red'
+        linewidth = 1 if ind != 18 else 2
+
+        print(ind, len(det))
+
+        plt.hist(det['Energy'], bins=100, range=(0, 400), histtype='step', label=label, color=color, linewidth=linewidth, zorder=10-i if ind != 18 else 100)
+
+    plt.legend()
+    plt.title('Energy of incoming gammas')
+    plt.xlabel('Energy [keV]')
+    plt.ylabel('Entries')
+    plt.tight_layout()
+    plt.savefig(f'E_ntuples.pdf', bbox_inches='tight')
 
     plt.show()
 
