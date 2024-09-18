@@ -70,6 +70,7 @@
 
 /vis/viewer/set/background 0.8 0.7 0.6
 /vis/viewer/set/style s
-/vis/viewer/set/hiddenEdge 1
-/vis/scene/add/axes 0 0 10 10 cm
+/vis/viewer/set/hiddenEdge 0
+#/vis/scene/add/axes 0 0 10 10 cm
+/vis/scene/add/axes -25 0 55 25 cm
 

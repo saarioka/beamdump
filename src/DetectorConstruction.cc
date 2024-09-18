@@ -66,7 +66,7 @@ DetectorConstruction::DetectorConstruction()
 {
   fMessenger = new DetectorMessenger(this);
 
-  fNbOfChambers = 30;
+  fNbOfChambers = 40;
   fLogicChamber = new G4LogicalVolume*[fNbOfChambers];
 }
 
@@ -122,7 +122,10 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
   G4double chamberSpacing = 80*cm; // from chamber center to center!
 
-  G4double chamberWidth = 5.0*cm; // width of the chambers
+  G4double chamberWidth = 2*cm; // width of the chambers
+  G4double chamberHeight = 3.0*cm; // width of the chambers
+  G4double chamberThickness = 0.1*cm;
+
   G4double targetLength = 1.0*mm; // full length of Target
   G4double targetLength2 = 5*cm; // full length of Target
 
@@ -132,7 +135,9 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
   G4double targetRadius  = 30*mm;   // Radius of Target
   targetLength = 0.5*targetLength;             // Half length of the Target
-  G4double trackerSize  = 60*cm;  // Half length of the Tracker
+  G4double trackerSize  = 26*cm;  // Half length of the Tracker
+
+  G4double R = 25*cm;
 
   // Definitions of Solids, Logical Volumes, Physical Volumes
 
@@ -199,7 +204,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
   // Tracker
 
-  G4ThreeVector positionTracker = G4ThreeVector(-trackerSize - 5 * cm, 0, 550*mm);
+  G4ThreeVector positionTracker = G4ThreeVector(-trackerSize - 3 * cm, 0, 550*mm);
 
   //auto trackerS = new G4Tubs("tracker", 0, trackerSize, trackerSize, 0. * deg, 360. * deg);
   auto trackerS = new G4Box("tracker", trackerSize, trackerSize, trackerSize);
@@ -225,25 +230,26 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   // Tracker segments
 
   G4double halfWidth = 0.5*chamberWidth;
-
-  G4double R = trackerSize - 1*cm;  // because of angle
+  G4double halfHeight = 0.5*chamberHeight;
 
   for (G4int copyNo=0; copyNo<fNbOfChambers; copyNo++) {
-
-      G4double chamberThickness = 0.1*cm;
-      auto chamberS = new G4Box("Chamber_solid", halfWidth, halfWidth, chamberThickness);
+      auto chamberS = new G4Box("Chamber_solid", halfWidth, halfHeight, chamberThickness);
 
       fLogicChamber[copyNo] = new G4LogicalVolume(chamberS, fChamberMaterial, "Chamber_LV", nullptr, nullptr, nullptr);
 
       fLogicChamber[copyNo]->SetVisAttributes(chamberVisAtt);
 
-      G4double chamberX = R * std::cos(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI) + R - halfWidth;
+      G4double chamberX = R * std::cos(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI) + R - chamberThickness + 4*cm;
       G4double chamberY = 0;
       G4double chamberZ = R * std::sin(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI);
 
       // rotate towards the center of the arc
       G4RotationMatrix* rotation = new G4RotationMatrix();
       rotation->rotateY( (double)copyNo / (double)fNbOfChambers * M_PI);
+
+      if (copyNo < 10 || copyNo >= (fNbOfChambers-10)){
+        continue;
+      }
 
       new G4PVPlacement(rotation,
         G4ThreeVector(chamberX, chamberY, chamberZ),  // at (x,y,z)
@@ -255,7 +261,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         fCheckOverlaps);                 // checking overlaps
   }
 
-  G4double maxStep = 0.5*chamberWidth;
+  G4double maxStep = chamberThickness;
   fStepLimit = new G4UserLimits(maxStep);
   trackerLV->SetUserLimits(fStepLimit);
 
