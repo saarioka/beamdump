@@ -32,6 +32,8 @@
 #include "TrackerSD.hh"
 
 #include "G4Material.hh"
+#include "G4Region.hh"
+#include "G4ProductionCuts.hh"
 #include "G4NistManager.hh"
 #include "G4SDManager.hh"
 
@@ -66,7 +68,7 @@ DetectorConstruction::DetectorConstruction()
 {
   fMessenger = new DetectorMessenger(this);
 
-  fNbOfChambers = 40;
+  fNbOfChambers = 36;
   fLogicChamber = new G4LogicalVolume*[fNbOfChambers];
 }
 
@@ -127,7 +129,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   G4double chamberThickness = 0.1*cm;
 
   G4double targetLength = 1.0*mm; // full length of Target
-  G4double targetLength2 = 5*cm; // full length of Target
+  G4double targetLength2 = 1*cm; // full length of Target
 
   G4double trackerLength = (fNbOfChambers+1)*chamberSpacing;
 
@@ -200,7 +202,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     0,                        // copy number
     fCheckOverlaps);          // checking overlaps
 
-  G4cout << "Target is " << 2*targetLength/cm << " cm of " << fTargetMaterial->GetName() << G4endl;
+  G4cout << "Target 2 is " << 2*targetLength2/cm << " cm of " << fTargetMaterial2->GetName() << G4endl;
 
   // Tracker
 
@@ -251,6 +253,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         continue;
       }
 
+      G4cout << "Chamber " << copyNo << " is placed at " << chamberX << " " << chamberY << " " << chamberZ << G4endl;
+
       new G4PVPlacement(rotation,
         G4ThreeVector(chamberX, chamberY, chamberZ),  // at (x,y,z)
         fLogicChamber[copyNo],           // its logical volume
@@ -264,6 +268,24 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   G4double maxStep = chamberThickness;
   fStepLimit = new G4UserLimits(maxStep);
   trackerLV->SetUserLimits(fStepLimit);
+
+  G4Region* targetRegion = new G4Region("Target");
+  fLogicTarget->SetRegion(targetRegion);
+  targetRegion->AddRootLogicalVolume(fLogicTarget);
+
+  G4Region* targetRegion2 = new G4Region("Target2");
+  fLogicTarget2->SetRegion(targetRegion2);
+  targetRegion2->AddRootLogicalVolume(fLogicTarget2);
+
+  //cuts->SetProductionCut(0.01 * mm, "gamma");
+  //cuts->SetProductionCut(0.01 * mm, "e-");
+  //cuts->SetProductionCut(0.01 * mm, "e+");
+  //cuts->SetProductionCut(0.05 * mm);
+
+  G4ProductionCuts* targetCuts = new G4ProductionCuts();
+  targetCuts->SetProductionCut(5 * um);
+  targetRegion->SetProductionCuts(targetCuts);
+  targetRegion2->SetProductionCuts(targetCuts);
 
   // Always return the physical world
 

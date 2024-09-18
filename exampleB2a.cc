@@ -40,6 +40,7 @@
 
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
+#include "PhysicsList.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -58,17 +59,14 @@ int main(int argc,char** argv)
   G4SteppingVerbose::UseBestUnit(precision);
 
   // Construct the default run manager
-  //
-  auto runManager =
-    G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+  auto runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
   // Set mandatory initialization classes
-  //
   runManager->SetUserInitialization(new B2a::DetectorConstruction());
 
-  auto physicsList = new FTFP_BERT;
-  physicsList->RegisterPhysics(new G4StepLimiterPhysics());
-  runManager->SetUserInitialization(physicsList);
+  //auto physicsList = new FTFP_BERT;
+  //physicsList->RegisterPhysics(new G4StepLimiterPhysics());
+  runManager->SetUserInitialization(new B2::PhysicsList);
 
   // Set user action classes
   runManager->SetUserInitialization(new B2::ActionInitialization());

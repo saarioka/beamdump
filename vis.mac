@@ -73,4 +73,3 @@
 /vis/viewer/set/hiddenEdge 0
 #/vis/scene/add/axes 0 0 10 10 cm
 /vis/scene/add/axes -25 0 55 25 cm
-

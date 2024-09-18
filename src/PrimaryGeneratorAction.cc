@@ -51,8 +51,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 
   // default particle kinematic
 
-  G4ParticleDefinition* particleDefinition
-    = G4ParticleTable::GetParticleTable()->FindParticle("e-");
+  G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle("e-");
 
   fParticleGun->SetParticleDefinition(particleDefinition);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
@@ -93,9 +92,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //G4double x = G4RandGauss::shoot(0, sigma);
   //G4double y = G4RandGauss::shoot(0, sigma);
 
-  // random x- and y-positions
-  G4double x = G4UniformRand() * 2 * sigma - sigma;
-  G4double y = G4UniformRand() * 2 * sigma - sigma;
+  // circular x- and y-positions with flat disctibution
+  G4double r = G4UniformRand() * sigma;
+  G4double phi = G4UniformRand() * 2 * M_PI;
+  G4double x = r * cos(phi);
+  G4double y = r * sin(phi);
 
   fParticleGun->SetParticlePosition(G4ThreeVector(x, y, -worldZHalfLength + 1*cm));
 

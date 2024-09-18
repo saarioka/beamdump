@@ -58,9 +58,12 @@ void RunAction::BeginOfRunAction(const G4Run* run)
 
   analysisManager->OpenFile(fileName);
 
-  for (int i = 0; i < 30; i++)
+  //G4int histoStart = 10;
+  G4int histoEnd = 25;
+  G4cout << "Creating histograms from " << 0 << " to " << histoEnd << G4endl;
+  for (int i = 0; i <= histoEnd; i++)
   {
-    analysisManager->CreateH1("E"+std::to_string(i), "Energy deposited in detector " + std::to_string(i), 100, 0, 4700);
+    analysisManager->CreateH1("E"+std::to_string(i), "Energy deposited in detector " + std::to_string(i), 100, 0, 4000);
   }
 
   analysisManager->CreateNtuple("Ntuple", "Ntuple");

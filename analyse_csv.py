@@ -8,7 +8,7 @@ import mplhep as hep
 hep.style.use('CMS')
 
 def read_histo(file_name):
-    print('Reading file: ', file_name)
+    #print('Reading file: ', file_name)
     with open(file_name, 'r') as f:
         l = 0
         for line in f.readlines():
@@ -59,13 +59,22 @@ def read_ntuples(file_names):
     return pd.concat(dfs)
 
 def main():
-    histos = glob.glob('Run0_h1_E*.csv')
+    histos = []
+    for i in range(10, 26):
+        histos.append(f'Run0_h1_E{i}.csv')
+
     plt.figure(figsize=(10, 6))
     for i,h in enumerate(histos):
         df, info, title = read_histo(h)
+
+        if df['entries'].sum() == 0:
+            continue
+
         info_str = '\n'.join([f'{k} {v}' for k, v in info.items()])
 
         x = np.linspace(info['Lower_lim'], info['Upper_lim'], info['Bins'])
+
+        print(h, info['Total_entries'], 'entries')
 
         #plt.title(title)
         #plt.step(x, df['entries'][1:-1], label='Entries per bin')
@@ -87,7 +96,10 @@ def main():
     plt.tight_layout()
     plt.savefig('E.pdf', bbox_inches='tight')
 
-    read_ntuples(glob.glob('Run0_nt_Ntuple_t*.csv'))
+    #read_ntuples(glob.glob('Run0_nt_Ntuple_t*.csv'))
+
+    plt.show()
+
 
 if __name__ == '__main__':
     main()
