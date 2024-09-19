@@ -82,6 +82,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4Material*       fTargetMaterial = nullptr;  // pointer to the target  material
     G4Material*       fTargetMaterial2 = nullptr;  // pointer to the target  material
     G4Material*       fChamberMaterial = nullptr; // pointer to the chamber material
+    G4Material*       fPipeMaterial = nullptr; // pointer to the chamber material
 
     G4UserLimits* fStepLimit = nullptr; // pointer to user step limits
 

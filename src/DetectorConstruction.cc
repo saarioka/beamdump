@@ -105,10 +105,12 @@ void DetectorConstruction::DefineMaterials()
 
   // Lead defined using NIST Manager
   fTargetMaterial  = nistManager->FindOrBuildMaterial("G4_W");
-  fTargetMaterial2  = nistManager->FindOrBuildMaterial("G4_W");
+  fTargetMaterial2  = nistManager->FindOrBuildMaterial("G4_Cu");
 
   // Xenon gas defined using NIST Manager
   fChamberMaterial = nistManager->FindOrBuildMaterial("G4_Galactic");
+
+  fPipeMaterial = nistManager->FindOrBuildMaterial("G4_STAINLESS-STEEL");
 
   // Print materials
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
@@ -140,6 +142,10 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   G4double trackerSize  = 26*cm;  // Half length of the Tracker
 
   G4double R = 25*cm;
+
+  G4double pipeLength = 25*cm;
+  G4double pipeRadius1 = targetRadius;
+  G4double pipeRadius2 = pipeRadius1 + 5*mm;
 
   // Definitions of Solids, Logical Volumes, Physical Volumes
 
@@ -206,7 +212,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
   // Tracker
 
-  G4ThreeVector positionTracker = G4ThreeVector(-trackerSize - 3 * cm, 0, 550*mm);
+  G4ThreeVector positionTracker = G4ThreeVector(-trackerSize - 13 * cm, 0, 550*mm);
 
   //auto trackerS = new G4Tubs("tracker", 0, trackerSize, trackerSize, 0. * deg, 360. * deg);
   auto trackerS = new G4Box("tracker", trackerSize, trackerSize, trackerSize);
@@ -220,13 +226,36 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     0,                        // copy number
     fCheckOverlaps);          // checking overlaps
 
+
+  G4cout << "Beampipe is " << 2*pipeLength/cm << " cm of " << fPipeMaterial->GetName() << G4endl;
+
+  G4ThreeVector positionPipe = G4ThreeVector(0, 0, pipeLength - 1*cm);
+
+  auto pipeS = new G4Tubs("target", pipeRadius1, pipeRadius2, pipeLength, 0. * deg, 360. * deg);
+  auto logicPipe = new G4LogicalVolume(pipeS, fPipeMaterial, "Beampipe", nullptr, nullptr, nullptr);
+
+  new G4PVPlacement(nullptr,
+    positionPipe,           // at (x,y,z)
+    logicPipe,             // its logical volume
+    "Beampipe",                 // its name
+    worldLV,                  // its mother volume
+    false,                    // no boolean operations
+    0,                        // copy number
+    fCheckOverlaps);          // checking overlaps
+
+
+  // Wall
+
   // Visualization attributes
 
   G4VisAttributes boxVisAtt(G4Colour::White());
+  G4VisAttributes targetVisAtt(G4Colour::Gray());
+  G4VisAttributes target2VisAtt(G4Colour::Brown());
   G4VisAttributes chamberVisAtt(G4Colour::Yellow());
 
   worldLV      ->SetVisAttributes(boxVisAtt);
-  fLogicTarget ->SetVisAttributes(boxVisAtt);
+  fLogicTarget ->SetVisAttributes(targetVisAtt);
+  fLogicTarget2 ->SetVisAttributes(target2VisAtt);
   trackerLV    ->SetVisAttributes(boxVisAtt);
 
   // Tracker segments
@@ -241,7 +270,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
       fLogicChamber[copyNo]->SetVisAttributes(chamberVisAtt);
 
-      G4double chamberX = R * std::cos(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI) + R - chamberThickness + 4*cm;
+      G4double chamberX = R * std::cos(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI) + R - chamberThickness + 14*cm;
       G4double chamberY = 0;
       G4double chamberZ = R * std::sin(((double)copyNo / (double)fNbOfChambers + 0.5) * M_PI);
 
