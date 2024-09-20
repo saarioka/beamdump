@@ -227,24 +227,23 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     fCheckOverlaps);          // checking overlaps
 
 
-  G4cout << "Beampipe is " << 2*pipeLength/cm << " cm of " << fPipeMaterial->GetName() << G4endl;
-
+  // Beampipe
   G4ThreeVector positionPipe = G4ThreeVector(0, 0, pipeLength - 1*cm);
 
   auto pipeS = new G4Tubs("target", pipeRadius1, pipeRadius2, pipeLength, 0. * deg, 360. * deg);
-  auto logicPipe = new G4LogicalVolume(pipeS, fPipeMaterial, "Beampipe", nullptr, nullptr, nullptr);
+  fLogicPipe = new G4LogicalVolume(pipeS, fPipeMaterial, "Shield_LV", nullptr, nullptr, nullptr);
 
   new G4PVPlacement(nullptr,
     positionPipe,           // at (x,y,z)
-    logicPipe,             // its logical volume
+    fLogicPipe,             // its logical volume
     "Beampipe",                 // its name
     worldLV,                  // its mother volume
     false,                    // no boolean operations
     0,                        // copy number
     fCheckOverlaps);          // checking overlaps
 
+  G4cout << "Beampipe is " << 2*pipeLength/cm << " cm of " << fPipeMaterial->GetName() << G4endl;
 
-  // Wall
 
   // Visualization attributes
 
@@ -333,6 +332,15 @@ void DetectorConstruction::ConstructSDandField()
   // Setting aTrackerSD to all logical volumes with the same name
   // of "Chamber_LV".
   SetSensitiveDetector("Chamber_LV", aTrackerSD, true);
+
+
+  G4String shieldSDname = "/ShieldSD";
+  auto shieldSD = new TrackerSD(shieldSDname, "ShieldHitsCollection");
+  G4SDManager::GetSDMpointer()->AddNewDetector(shieldSD);
+  // Setting aTrackerSD to all logical volumes with the same name
+  // of "Chamber_LV".
+  SetSensitiveDetector("Shield_LV", shieldSD, true);
+
 
   // Create global magnetic field messenger.
   // Uniform magnetic field is then created automatically if

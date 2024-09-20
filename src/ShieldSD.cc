@@ -24,10 +24,10 @@
 // ********************************************************************
 //
 //
-/// \file B2/B2a/src/TrackerSD.cc
-/// \brief Implementation of the B2::TrackerSD class
+/// \file B2/B2a/src/ShieldSD.cc
+/// \brief Implementation of the B2::ShieldSD class
 
-#include "TrackerSD.hh"
+#include "ShieldSD.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
 #include "G4ThreeVector.hh"
@@ -39,7 +39,7 @@ namespace B2
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-TrackerSD::TrackerSD(const G4String& name,
+ShieldSD::ShieldSD(const G4String& name,
                      const G4String& hitsCollectionName)
  : G4VSensitiveDetector(name)
 {
@@ -48,7 +48,7 @@ TrackerSD::TrackerSD(const G4String& name,
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void TrackerSD::Initialize(G4HCofThisEvent* hce)
+void ShieldSD::Initialize(G4HCofThisEvent* hce)
 {
   // Create hits collection
 
@@ -56,58 +56,31 @@ void TrackerSD::Initialize(G4HCofThisEvent* hce)
 
   // Add this collection in hce
 
-  G4int hcID
-    = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+  G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
   hce->AddHitsCollection( hcID, fHitsCollection );
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4bool TrackerSD::ProcessHits(G4Step* aStep,
+G4bool ShieldSD::ProcessHits(G4Step* aStep,
                                      G4TouchableHistory*)
 {
-  // energy deposit
-  G4double edep = aStep->GetTotalEnergyDeposit();
-
-  //get energy of particle
-  G4double e = aStep->GetPreStepPoint()->GetKineticEnergy();
-
-  //if (edep==0.) return false;
-  
   G4Track *track = aStep->GetTrack();
-
-  auto particleName = track->GetDefinition()->GetParticleName();
-  if (particleName != "gamma"){
-    track->SetTrackStatus(fStopAndKill);
-    return false;
-  }
-
-  auto newHit = new TrackerHit();
-
-  newHit->SetTrackID  (aStep->GetTrack()->GetTrackID());
-  newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber());
-  newHit->SetEdep(edep);
-  newHit->SetE(e);
-  newHit->SetPos (aStep->GetPostStepPoint()->GetPosition());
-
-  fHitsCollection->insert( newHit );
 
   track->SetTrackStatus(fStopAndKill);
 
-  //newHit->Print();
-
-  return true;
+  return false;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void TrackerSD::EndOfEvent(G4HCofThisEvent*)
+void ShieldSD::EndOfEvent(G4HCofThisEvent*)
 {
   if ( verboseLevel>1 ) {
      std::size_t nofHits = fHitsCollection->entries();
      G4cout << G4endl
             << "-------->Hits Collection: in this event they are " << nofHits
-            << " hits in the tracker chambers: " << G4endl;
+            << " hits in the Shield chambers: " << G4endl;
      for ( std::size_t i=0; i<nofHits; i++ ) (*fHitsCollection)[i]->Print();
   }
 }

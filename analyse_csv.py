@@ -65,7 +65,7 @@ def main():
     for i in good_detectors:
         histos.append(f'Run0_h1_E{i}.csv')
 
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(12, 6))
     for i,h in enumerate(histos):
         df, info, title = read_histo(h)
 
@@ -88,8 +88,11 @@ def main():
             label = 'Largest angle'
         elif i == len(histos)-1:
             label = 'Smallest angle'
+        
+        if 'E18.csv' in h:
+            label = '90 deg'
 
-        plt.step(x, df['entries'][1:-1], label=label, color=[0.9*i/len(histos)]*3)
+        plt.step(x, df['entries'][1:-1], label=label, color='red' if 'E18.csv' in h else [0.9*i/len(histos)]*3)
     
     plt.legend()
     plt.ylabel('Entries')

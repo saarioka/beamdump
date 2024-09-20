@@ -14,4 +14,4 @@
 /process/eLoss/StepFunction 0.1 0.001 mm
 
 /run/printProgress 10000000
-/run/beamOn        1000000000
+/run/beamOn        100000000
