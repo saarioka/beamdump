@@ -164,7 +164,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     "World");                                            // its name
 
   //  Must place the World Physical volume unrotated at (0,0,0).
-  //
   auto worldPV = new G4PVPlacement(nullptr,  // no rotation
     G4ThreeVector(),                         // at (0,0,0)
     worldLV,                                 // its logical volume
@@ -175,11 +174,11 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     fCheckOverlaps);                         // checking overlaps
 
   // Target
-
   G4ThreeVector positionTarget = G4ThreeVector(0,0,0);
 
   auto targetS = new G4Tubs("target", 0., targetRadius, targetLength, 0. * deg, 360. * deg);
   fLogicTarget = new G4LogicalVolume(targetS, fTargetMaterial, "Target", nullptr, nullptr, nullptr);
+
   new G4PVPlacement(nullptr,  // no rotation
     positionTarget,           // at (x,y,z)
     fLogicTarget,             // its logical volume
@@ -191,13 +190,14 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
   G4cout << "Target is " << 2*targetLength/cm << " cm of " << fTargetMaterial->GetName() << G4endl;
 
+
+  // Target 2
   G4ThreeVector positionTarget2 = G4ThreeVector(0, 0, 550*mm + targetLength2);
 
   G4RotationMatrix* targetRotation2 = new G4RotationMatrix();
   targetRotation2->rotateY(-5*deg);
   auto targetS2 = new G4Tubs("target", 0., targetRadius, targetLength2, 0. * deg, 360. * deg);
   fLogicTarget2 = new G4LogicalVolume(targetS2, fTargetMaterial2, "Target", nullptr, nullptr, nullptr);
-
 
   new G4PVPlacement(targetRotation2,
     positionTarget2,           // at (x,y,z)
@@ -210,8 +210,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
   G4cout << "Target 2 is " << 2*targetLength2/cm << " cm of " << fTargetMaterial2->GetName() << G4endl;
 
-  // Tracker
 
+  // Tracker
   G4ThreeVector positionTracker = G4ThreeVector(-trackerSize - 13 * cm, 0, 550*mm);
 
   //auto trackerS = new G4Tubs("tracker", 0, trackerSize, trackerSize, 0. * deg, 360. * deg);
@@ -233,6 +233,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   auto pipeS = new G4Tubs("target", pipeRadius1, pipeRadius2, pipeLength, 0. * deg, 360. * deg);
   fLogicPipe = new G4LogicalVolume(pipeS, fPipeMaterial, "Shield_LV", nullptr, nullptr, nullptr);
 
+  /*
   new G4PVPlacement(nullptr,
     positionPipe,           // at (x,y,z)
     fLogicPipe,             // its logical volume
@@ -243,7 +244,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     fCheckOverlaps);          // checking overlaps
 
   G4cout << "Beampipe is " << 2*pipeLength/cm << " cm of " << fPipeMaterial->GetName() << G4endl;
-
+  */
 
   // Visualization attributes
 

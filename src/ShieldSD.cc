@@ -67,9 +67,14 @@ G4bool ShieldSD::ProcessHits(G4Step* aStep,
 {
   G4Track *track = aStep->GetTrack();
 
-  track->SetTrackStatus(fStopAndKill);
+  auto particleName = track->GetDefinition()->GetParticleName();
 
-  return false;
+  if (particleName == "gamma"){
+    track->SetTrackStatus(fStopAndKill);
+    return false;
+  }
+
+  return true;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

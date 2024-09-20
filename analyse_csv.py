@@ -65,7 +65,8 @@ def main():
     for i in good_detectors:
         histos.append(f'Run0_h1_E{i}.csv')
 
-    plt.figure(figsize=(12, 6))
+    fig, (ax1, ax2) =  plt.subplots(figsize=(13, 12), nrows=2, ncols=1)
+    plt.sca(ax1)
     for i,h in enumerate(histos):
         df, info, title = read_histo(h)
 
@@ -97,13 +98,15 @@ def main():
     plt.legend()
     plt.ylabel('Entries')
     plt.xlabel('Energy [keV]')
-    plt.title('Energy of incoming gammas')
-    plt.tight_layout()
-    plt.savefig('E.pdf', bbox_inches='tight')
+    plt.suptitle('Energy of incoming gammas')
+    #plt.tight_layout()
+    #plt.savefig('E.pdf', bbox_inches='tight')
 
     df = read_ntuples(glob.glob('Run0_nt_Ntuple_t*.csv'))
 
-    plt.figure(figsize=(12, 6))
+    low_e = df[(df['Energy'] < 100) & (df['Detector'] == 18)]
+
+    plt.sca(ax2)
     for i,ind in enumerate(good_detectors):
         det = df[df['Detector'] == ind]
 
@@ -123,12 +126,13 @@ def main():
 
         plt.hist(det['Energy'], bins=200, range=(0, 200), histtype='step', label=label, color=color, linewidth=linewidth, zorder=10-i if ind != 18 else 100)
 
-    plt.legend()
-    plt.title('Energy of incoming gammas')
+    plt.legend(title=f'{len(low_e)} entries below 100 keV at 90 deg')
+    #plt.title('Energy of incoming gammas')
     plt.xlabel('Energy [keV]')
     plt.ylabel('Entries')
     plt.tight_layout()
-    plt.savefig(f'E_ntuples.pdf', bbox_inches='tight')
+
+    plt.savefig(f'E.pdf', bbox_inches='tight')
 
     plt.show()
 
