@@ -131,7 +131,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   G4double chamberThickness = 0.1*cm;
 
   G4double targetLength = 1.0*mm; // full length of Target
-  G4double targetLength2 = 1*cm; // full length of Target
+  G4double targetLength2 = 1*cm; // half length of Target
 
   G4double trackerLength = (fNbOfChambers+1)*chamberSpacing;
 
@@ -199,6 +199,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   auto targetS2 = new G4Tubs("target", 0., targetRadius, targetLength2, 0. * deg, 360. * deg);
   fLogicTarget2 = new G4LogicalVolume(targetS2, fTargetMaterial2, "Target", nullptr, nullptr, nullptr);
 
+  /*
   new G4PVPlacement(targetRotation2,
     positionTarget2,           // at (x,y,z)
     fLogicTarget2,             // its logical volume
@@ -207,8 +208,9 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     false,                    // no boolean operations
     0,                        // copy number
     fCheckOverlaps);          // checking overlaps
+  */
 
-  G4cout << "Target 2 is " << 2*targetLength2/cm << " cm of " << fTargetMaterial2->GetName() << G4endl;
+  G4cout << "Target 2 is " << targetLength2/cm << " cm of " << fTargetMaterial2->GetName() << G4endl;
 
 
   // Tracker
@@ -217,6 +219,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   //auto trackerS = new G4Tubs("tracker", 0, trackerSize, trackerSize, 0. * deg, 360. * deg);
   auto trackerS = new G4Box("tracker", trackerSize, trackerSize, trackerSize);
   auto trackerLV = new G4LogicalVolume(trackerS, air, "Tracker", nullptr, nullptr, nullptr);
+  /*
   new G4PVPlacement(nullptr,  // no rotation
     positionTracker,          // at (x,y,z)
     trackerLV,                // its logical volume
@@ -225,6 +228,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     false,                    // no boolean operations
     0,                        // copy number
     fCheckOverlaps);          // checking overlaps
+  */
 
 
   // Beampipe
@@ -284,6 +288,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
       G4cout << "Chamber " << copyNo << " is placed at " << chamberX << " " << chamberY << " " << chamberZ << G4endl;
 
+      /*
       new G4PVPlacement(rotation,
         G4ThreeVector(chamberX, chamberY, chamberZ),  // at (x,y,z)
         fLogicChamber[copyNo],           // its logical volume
@@ -292,6 +297,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         false,                           // no boolean operations
         copyNo,                          // copy number
         fCheckOverlaps);                 // checking overlaps
+      */
   }
 
   G4double maxStep = chamberThickness;

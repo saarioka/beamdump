@@ -42,6 +42,8 @@
 #include "G4UIExecutive.hh"
 #include "PhysicsList.hh"
 
+#include "G4ScoringManager.hh"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int main(int argc,char** argv)
@@ -59,7 +61,9 @@ int main(int argc,char** argv)
   G4SteppingVerbose::UseBestUnit(precision);
 
   // Construct the default run manager
-  auto runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+  //auto runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::MT);
+  G4RunManager* runManager = new G4MTRunManager;
+  G4ScoringManager* scoringManager = G4ScoringManager::GetScoringManager();
 
   // Set mandatory initialization classes
   runManager->SetUserInitialization(new B2a::DetectorConstruction());

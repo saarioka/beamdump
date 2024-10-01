@@ -61,7 +61,7 @@ void EventAction::EndOfEventAction(const G4Event* event)
   // periodic printing
 
   /*
-  G4int eventID = event->GetEventID();
+  G4int eventID = event->getEnergyventID();
   if ( eventID < 100 || eventID % 100 == 0) {
     G4cout << ">>> Event: " << eventID  << G4endl;
     if ( trajectoryContainer ) {
@@ -75,18 +75,23 @@ void EventAction::EndOfEventAction(const G4Event* event)
   */
 
   // iterate over hits collections
-
   G4HCofThisEvent* HCE = event->GetHCofThisEvent();
   G4int n_collections = HCE->GetNumberOfCollections();
   for (G4int i=0; i<n_collections; i++) {
     G4VHitsCollection* hc = HCE->GetHC(i);
     G4String hcName = hc->GetName();
+
+    if (!hcName.contains("TrackerHitsCollection") && !hcName.contains("ShieldHitsCollection")){
+      continue;
+    }
+
     G4int n_hit = hc->GetSize();
     if ( n_hit > 0 ) {
       //G4cout << "    Hits Collection " << i <<": " << hcName << " with " << n_hit << " hits" << G4endl;
       for (G4int j=0; j<n_hit; j++) {
-        auto hit = static_cast<TrackerHit*>(hc->GetHit(j));
-        auto E = hit->GetE();
+        TrackerHit* hit = dynamic_cast<TrackerHit*>(hc->GetHit(j));
+        //G4double E = hit->getE();
+        G4double E = 0.;
         G4int evt = event->GetEventID();
         G4int det = hit->GetChamberNb();
 
@@ -100,7 +105,6 @@ void EventAction::EndOfEventAction(const G4Event* event)
       }
     }
   }
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -13,5 +13,24 @@
 /process/em/deexcitation Target2 true true true
 /process/eLoss/StepFunction 0.1 0.001 mm
 
-/run/printProgress 10000000
-/run/beamOn        100000000
+/control/execute scorer.mac
+
+/run/printProgress 100000
+/run/beamOn        1000000
+/vis/enable
+
+/score/drawProjection cylinderMesh_1 currentGamma defaultLinearColorMap 100
+
+/score/drawProjection cylinderMesh_1 currentGamma
+/score/drawProjection cylinderMesh_1 fluxGamma
+
+
+/score/dumpQuantityToFile cylinderMesh_1 nOfStepGamma nOfStepGamma.txt
+/score/dumpQuantityToFile cylinderMesh_1 currentGamma currentGamma.txt
+/score/dumpQuantityToFile cylinderMesh_1 fluxGamma fluxGamma.txt
+
+/score/dumpQuantityToFile cylinderMesh_1 nOfStepElectron nOfStepElectron.txt
+/score/dumpQuantityToFile cylinderMesh_1 currentElectron currentElectron.txt
+/score/dumpQuantityToFile cylinderMesh_1 fluxElectron fluxElectron.txt
+
+/vis/open
