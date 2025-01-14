@@ -53,12 +53,20 @@ def read_ntuples(file_names):
 def main(files):
     for f in files:
         df = read_histo(f)
-        plt.figure()
+        plt.figure(figsize=(12, 9))
+
+        df.iX -= 50
+        df.iY -= 50
         
-        #make 2d histogram from the data where the x and y coordinates are the first two columns and entries are the third column
-        plt.hist2d(df.iX, df.iY, weights=df.entry, bins=int(np.sqrt(len(df))), cmap='viridis')
+        plt.hist2d(df.iX, df.iY, weights=df.entry, bins=int(np.sqrt(len(df))), cmap='viridis', edgecolor='face')
         plt.colorbar(label='Entries')
-        plt.title(f'2D histogram of {f}\ntotal entries: {df.entry.sum()}')
+        plt.title(f'{f.replace(".txt", "")} at 50 cm from the W disk\ntotal entries: {df.entry.sum()}')
+        plt.xlabel('X (cm)')
+        plt.xlabel('Y (cm)')
+
+        plt.tight_layout()
+        plt.savefig(f.replace('.txt', '.pdf'), bbox_inches='tight')
+
     plt.show()
         
 

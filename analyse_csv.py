@@ -124,7 +124,12 @@ def main():
 
         print(ind, len(det))
 
-        plt.hist(det['Energy'], bins=200, range=(0, 200), histtype='step', label=label, color=color, linewidth=linewidth, zorder=10-i if ind != 18 else 100)
+        n, bins, _ = plt.hist(det['Energy'], bins=200, range=(0, 200), histtype='step', label=label, color=color, linewidth=linewidth, zorder=10-i if ind != 18 else 100)
+
+        if ind == 18:
+            # make dataframe and save to csv
+            d = pd.DataFrame({'bin_edge_left': bins[:-1], 'Energy': n})
+            d.to_csv('energy.csv', index=False)
 
     plt.legend(title=f'{len(low_e)} entries below 100 keV at 90 deg')
     #plt.title('Energy of incoming gammas')
