@@ -30,6 +30,7 @@
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
 #include "TrackerSD.hh"
+#include "ShieldSD.hh"
 
 #include "G4Material.hh"
 #include "G4Region.hh"
@@ -199,7 +200,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   auto targetS2 = new G4Tubs("target", 0., targetRadius, targetLength2, 0. * deg, 360. * deg);
   fLogicTarget2 = new G4LogicalVolume(targetS2, fTargetMaterial2, "Target", nullptr, nullptr, nullptr);
 
-  /*
   new G4PVPlacement(targetRotation2,
     positionTarget2,           // at (x,y,z)
     fLogicTarget2,             // its logical volume
@@ -208,7 +208,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     false,                    // no boolean operations
     0,                        // copy number
     fCheckOverlaps);          // checking overlaps
-  */
 
   G4cout << "Target 2 is " << targetLength2/cm << " cm of " << fTargetMaterial2->GetName() << G4endl;
 
@@ -219,7 +218,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   //auto trackerS = new G4Tubs("tracker", 0, trackerSize, trackerSize, 0. * deg, 360. * deg);
   auto trackerS = new G4Box("tracker", trackerSize, trackerSize, trackerSize);
   auto trackerLV = new G4LogicalVolume(trackerS, air, "Tracker", nullptr, nullptr, nullptr);
-  /*
   new G4PVPlacement(nullptr,  // no rotation
     positionTracker,          // at (x,y,z)
     trackerLV,                // its logical volume
@@ -228,7 +226,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     false,                    // no boolean operations
     0,                        // copy number
     fCheckOverlaps);          // checking overlaps
-  */
 
 
   // Beampipe
@@ -237,7 +234,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   auto pipeS = new G4Tubs("target", pipeRadius1, pipeRadius2, pipeLength, 0. * deg, 360. * deg);
   fLogicPipe = new G4LogicalVolume(pipeS, fPipeMaterial, "Shield_LV", nullptr, nullptr, nullptr);
 
-  /*
   new G4PVPlacement(nullptr,
     positionPipe,           // at (x,y,z)
     fLogicPipe,             // its logical volume
@@ -248,7 +244,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
     fCheckOverlaps);          // checking overlaps
 
   G4cout << "Beampipe is " << 2*pipeLength/cm << " cm of " << fPipeMaterial->GetName() << G4endl;
-  */
 
   // Visualization attributes
 
@@ -288,7 +283,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
       G4cout << "Chamber " << copyNo << " is placed at " << chamberX << " " << chamberY << " " << chamberZ << G4endl;
 
-      /*
       new G4PVPlacement(rotation,
         G4ThreeVector(chamberX, chamberY, chamberZ),  // at (x,y,z)
         fLogicChamber[copyNo],           // its logical volume
@@ -297,7 +291,6 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
         false,                           // no boolean operations
         copyNo,                          // copy number
         fCheckOverlaps);                 // checking overlaps
-      */
   }
 
   G4double maxStep = chamberThickness;
@@ -342,7 +335,7 @@ void DetectorConstruction::ConstructSDandField()
 
 
   G4String shieldSDname = "/ShieldSD";
-  auto shieldSD = new TrackerSD(shieldSDname, "ShieldHitsCollection");
+  auto shieldSD = new ShieldSD(shieldSDname, "ShieldHitsCollection");
   G4SDManager::GetSDMpointer()->AddNewDetector(shieldSD);
   // Setting aTrackerSD to all logical volumes with the same name
   // of "Chamber_LV".
